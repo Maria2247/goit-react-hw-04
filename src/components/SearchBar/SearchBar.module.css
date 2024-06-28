@@ -1,0 +1,37 @@
+.header {
+    background-color: rgb(26, 71, 9);
+    padding: 24px;
+    height: 100%;
+}
+
+.form {
+    text-align: center;
+}
+
+.input {
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid rgb(4, 31, 1);
+}
+
+.input:hover,
+.input:active,
+.input:focus {
+    outline: none;
+}
+
+.searchBtn {
+    margin-left: 10px;
+    padding: 10px;
+    padding: 10px;
+    border-radius: 4px;
+    border: none;
+    background-color: rgb(78, 121, 52);
+    cursor: grab;
+    color: rgb(4, 31, 1);
+}
+
+.searchBtn:hover,
+.searchBtn:active {
+    color: rgb(156, 194, 188);
+}
