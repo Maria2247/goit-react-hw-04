@@ -2,9 +2,11 @@ import SearchBar from "../SearchBar/SearchBar";
 import ImageGallery from "../ImageGallery/ImageGallery";
 import ErrorMeassage from "../ErrorMessage/ErrorMessage";
 import Loader from "../Loader/Loader";
+import toast from "react-hot-toast";
 import ImageModal from "../ImageModal/ImageModal";
 import { useState } from "react";
 import { fetchUnsplashImages } from "../../helpers/images-api";
+import LoadMoreBtn from "../LoadMoreBtn/LoadMoreBtn";
 // import css from "./App.module.css";
 
 export default function App() {
@@ -34,10 +36,14 @@ export default function App() {
             setImages([]);
             setError(false);
             setLoading(true);
+            setPage(1);
             const queryResult = await fetchUnsplashImages(inputValue, 1);
+            if (queryResult.results.length === 0) {
+                toast.info();
+                return;
+            }
             setImages(queryResult.results);
             setMaxPage(queryResult.total_pages);
-            setPage(1);
         } catch (error) {
             setError(true);
         } finally {
@@ -49,9 +55,9 @@ export default function App() {
         try {
             setLoading(true);
             const nextPage = page + 1;
-            const queryResult = await fetchUnsplashImages(inputValue, nextPage);
-            setImages((prevImages) => [...prevImages, ...queryResult.results]);
-            setMaxPage(queryResult.total_pages);
+            const queryResultMore = await fetchUnsplashImages(inputValue, nextPage);
+            setImages((prevImages) => [...prevImages, ...queryResultMore.results]);
+            setMaxPage(queryResultMore.total_pages);
             setPage(nextPage);
             window.scrollBy({
                 top: 300,
@@ -69,7 +75,7 @@ export default function App() {
             {images.length > 0 && <ImageGallery imageObj={images} onClick={openModal} />}
             {loading && <Loader />}
             <ImageModal isOpen={modalIsOpen} closeModal={closeModal} imageUrl={largeImg} />
-            {!loading && maxPage > 1 && page <= maxPage && <button onClick={handleLoadMore}>Load more</button>}
+            {!loading && maxPage > 1 && page <= maxPage && <LoadMoreBtn onClick={handleLoadMore} />}
         </div>
     );
 }

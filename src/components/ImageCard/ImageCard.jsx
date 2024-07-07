@@ -8,8 +8,8 @@ export default function ImageCard({
     onClick,
 }) {
     return (
-        <div className={css.imgItem}>
-            <img src={small} alt={alt_description} onClick={() => onClick(regular)} />
+        <div className={css.imgHolder}>
+            <img src={small} alt={alt_description} onClick={() => onClick(regular)} className={css.image} />
         </div>
     );
 }

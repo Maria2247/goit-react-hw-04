@@ -12,7 +12,7 @@ export const fetchUnsplashImages = async (queryString, page) => {
         params: {
             query: queryString,
             page: page,
-            per_page: 20,
+            per_page: 12,
         },
     });
     return response.data;

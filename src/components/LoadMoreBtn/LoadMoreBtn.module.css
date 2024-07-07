@@ -1,0 +1,15 @@
+.btn {
+    margin: 10px auto;
+    display: flex;
+    padding: 10px;
+    border-radius: 4px;
+    border: none;
+    background-color: rgb(78, 121, 52, 0.8);
+    cursor: grab;
+    color: rgb(4, 31, 1);
+}
+
+.btn:hover,
+.btn:active {
+    color: rgb(156, 194, 188);
+}
