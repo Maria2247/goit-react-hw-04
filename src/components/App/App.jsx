@@ -33,7 +33,6 @@ export default function App() {
         setImages([]);
         setPage(1);
         setInputValue(newQuery);
-        setShowBtn(false);
     };
 
     const handleLoadMore = () => {
@@ -48,6 +47,7 @@ export default function App() {
                 setError(false);
                 const queryResult = await fetchUnsplashImages(inputValue, page);
                 if (queryResult.results.length === 0) {
+                    setShowBtn(false);
                     const notify = () => {
                         toast("Oops, couldn't find anything", { duration: 2000 });
                     };
