@@ -2,12 +2,11 @@ import SearchBar from "../SearchBar/SearchBar";
 import ImageGallery from "../ImageGallery/ImageGallery";
 import ErrorMeassage from "../ErrorMessage/ErrorMessage";
 import Loader from "../Loader/Loader";
-import toast from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import ImageModal from "../ImageModal/ImageModal";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { fetchUnsplashImages } from "../../helpers/images-api";
 import LoadMoreBtn from "../LoadMoreBtn/LoadMoreBtn";
-// import css from "./App.module.css";
 
 export default function App() {
     const [images, setImages] = useState([]);
@@ -18,64 +17,67 @@ export default function App() {
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [largeImg, setLargeImg] = useState(null);
     const [inputValue, setInputValue] = useState("");
+    const [showBtn, setShowBtn] = useState(false);
 
-    // Відкриваємо модальне вікно з великою картинкою
     const openModal = (largeImg) => {
         setModalIsOpen(true);
         setLargeImg(largeImg);
     };
 
-    // Закриваємо модальне вікно з великою картинкою
     const closeModal = () => {
         setModalIsOpen(false);
         setLargeImg(null);
     };
 
-    const handleSearch = async () => {
-        try {
-            setImages([]);
-            setError(false);
-            setLoading(true);
-            setPage(1);
-            const queryResult = await fetchUnsplashImages(inputValue, 1);
-            if (queryResult.results.length === 0) {
-                toast.info();
-                return;
-            }
-            setImages(queryResult.results);
-            setMaxPage(queryResult.total_pages);
-        } catch (error) {
-            setError(true);
-        } finally {
-            setLoading(false);
-        }
+    const handleSearch = async (newQuery) => {
+        setImages([]);
+        setPage(1);
+        setInputValue(newQuery);
     };
 
-    const handleLoadMore = async () => {
-        try {
-            setLoading(true);
-            const nextPage = page + 1;
-            const queryResultMore = await fetchUnsplashImages(inputValue, nextPage);
-            setImages((prevImages) => [...prevImages, ...queryResultMore.results]);
-            setMaxPage(queryResultMore.total_pages);
-            setPage(nextPage);
-            window.scrollBy({
-                top: 300,
-                behavior: "smooth",
-            });
-        } finally {
-            setLoading(false);
-        }
+    const handleLoadMore = () => {
+        setPage((prevPage) => prevPage + 1);
     };
+
+    useEffect(() => {
+        if (inputValue === "") return;
+        async function getImages() {
+            try {
+                setLoading(true);
+                setError(false);
+                const queryResult = await fetchUnsplashImages(inputValue, page);
+                if (queryResult.results.length === 0) {
+                    const notify = () => {
+                        toast("Oops, couldn't find anything", { duration: 2000 });
+                    };
+                    return notify();
+                }
+                setImages((prevImages) => {
+                    return [...prevImages, ...queryResult.results];
+                });
+                setMaxPage(queryResult.total_pages);
+            } catch (error) {
+                setError(true);
+            } finally {
+                setLoading(false);
+            }
+        }
+        getImages();
+    }, [inputValue, page]);
+
+    useEffect(() => {
+        setShowBtn(page < maxPage);
+    }, [page, maxPage]);
 
     return (
-        <div id="app">
-            <SearchBar inputValue={inputValue} setInputValue={setInputValue} onSubmit={handleSearch} />
+        <div>
+            <SearchBar onSubmit={handleSearch} />
             {error && <ErrorMeassage />}
             {images.length > 0 && <ImageGallery imageObj={images} onClick={openModal} />}
             {loading && <Loader />}
             <ImageModal isOpen={modalIsOpen} closeModal={closeModal} imageUrl={largeImg} />
-            {!loading && maxPage > 1 && page <= maxPage && <LoadMoreBtn onClick={handleLoadMore} />}
+            {showBtn && <LoadMoreBtn onClick={handleLoadMore} id="app" />}
+            <Toaster />
         </div>
     );
 }

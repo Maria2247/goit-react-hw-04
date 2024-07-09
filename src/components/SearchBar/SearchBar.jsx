@@ -1,27 +1,32 @@
-import toast, { Toaster } from "react-hot-toast";
+import { Formik, Form, Field } from "formik";
 import css from "./SearchBar.module.css";
+import toast, { Toaster } from "react-hot-toast";
 
-export default function SearchBar({ onSubmit, inputValue, setInputValue }) {
-    const handleSubmit = (evt) => {
-        evt.preventDefault();
+// import { act } from "react";
 
-        if (inputValue === "") {
-            const notify = () => {
-                toast("Oops, we can't inspire you with an empty search", { duration: 2000 });
-            };
-            return notify();
-        }
-
-        onSubmit();
-    };
+export default function SearchBar({ onSubmit }) {
     return (
         <header className={css.header}>
-            <form onSubmit={handleSubmit} className={css.form}>
-                <input type="text" name="topic" value={inputValue} onChange={(e) => setInputValue(e.target.value.trim())} autoComplete="off" autoFocus placeholder="What inspires you?" className={css.input} />
-                <button type="submit" className={css.searchBtn}>
-                    Search
-                </button>
-            </form>
+            <Formik
+                initialValues={{ query: "" }}
+                onSubmit={(values, actions) => {
+                    if (values.query.trim() === "") {
+                        const notify = () => {
+                            toast("Oops, we can't inspire you with an empty search", { duration: 2000 });
+                        };
+                        return notify();
+                    }
+                    onSubmit(values.query.trim());
+                    actions.resetForm();
+                }}
+            >
+                <Form className={css.form}>
+                    <Field className={css.input} name="query" type="text" autoComplete="off" autoFocus placeholder="What inspires you?" />
+                    <button type="submit" className={css.searchBtn}>
+                        Search
+                    </button>
+                </Form>
+            </Formik>
             <Toaster />
         </header>
     );
