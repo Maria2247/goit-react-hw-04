@@ -33,6 +33,7 @@ export default function App() {
         setImages([]);
         setPage(1);
         setInputValue(newQuery);
+        setShowBtn(false);
     };
 
     const handleLoadMore = () => {
